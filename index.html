@@ -32,11 +32,23 @@
       color: #333;
       white-space: pre-line;
     }
+
+    a.map-link {
+      display: inline-block;
+      margin-top: 15px;
+      color: #007BFF;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a.map-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <h1>Obter Localização Atual</h1>
-  <button onclick="getLocation()">Mostrar Latitude, Longitude e Altitude</button>
+  <button onclick="getLocation()">Mostrar Localização</button>
   <div id="output"></div>
 
   <script>
@@ -56,7 +68,15 @@
           const lon = position.coords.longitude;
           const alt = position.coords.altitude;
 
-          output.innerText = `Latitude: ${lat}\nLongitude: ${lon}\nAltitude: ${alt !== null ? alt + " metros" : "Não disponível"}`;
+          const latDMS = convertToDMS(lat, 'lat');
+          const lonDMS = convertToDMS(lon, 'lon');
+          const googleMapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
+
+          output.innerHTML =
+            `📍 Coordenadas decimais:<br>Latitude: ${lat}<br>Longitude: ${lon}<br>` +
+            `🌐 Coordenadas em DMS:<br>${latDMS} ${lonDMS}<br>` +
+            `⛰️ Altitude: ${alt !== null ? alt + " metros" : "Não disponível"}<br>` +
+            `<a class="map-link" href="${googleMapsLink}" target="_blank">Ver no Google Maps</a>`;
         },
         (error) => {
           switch (error.code) {
@@ -80,6 +100,21 @@
           maximumAge: 0
         }
       );
+    }
+
+    function convertToDMS(deg, type) {
+      const absDeg = Math.abs(deg);
+      const degrees = Math.floor(absDeg);
+      const minutesFull = (absDeg - degrees) * 60;
+      const minutes = Math.floor(minutesFull);
+      const seconds = ((minutesFull - minutes) * 60).toFixed(1);
+
+      const direction =
+        type === 'lat'
+          ? deg >= 0 ? 'N' : 'S'
+          : deg >= 0 ? 'E' : 'W';
+
+      return `${degrees}°${minutes}'${seconds}"${direction}`;
     }
   </script>
 </body>
