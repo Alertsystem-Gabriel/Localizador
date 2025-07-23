@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Localização</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f0f0f5;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #output {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #333;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <h1>Obter Localização Atual</h1>
+  <button onclick="getLocation()">Mostrar Latitude, Longitude e Altitude</button>
+  <div id="output"></div>
+
+  <script>
+    function getLocation() {
+      const output = document.getElementById("output");
+
+      if (!navigator.geolocation) {
+        output.innerText = "Geolocalização não é suportada neste navegador.";
+        return;
+      }
+
+      output.innerText = "Obtendo localização...";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const alt = position.coords.altitude;
+
+          output.innerText = `Latitude: ${lat}\nLongitude: ${lon}\nAltitude: ${alt !== null ? alt + " metros" : "Não disponível"}`;
+        },
+        (error) => {
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              output.innerText = "Permissão negada para acessar localização.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              output.innerText = "Localização indisponível.";
+              break;
+            case error.TIMEOUT:
+              output.innerText = "Tempo de resposta excedido.";
+              break;
+            default:
+              output.innerText = "Erro desconhecido.";
+              break;
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    }
+  </script>
+</body>
+</html>
